@@ -32,7 +32,7 @@ class EyeTrackingDataModule(pl.LightningDataModule):
         # Setup for each stage (train, val, test) based on the dataset
         get_dataset_fn = select_dataset(self.dataset_name)
         if self.dataset_name == "DVSGesture":
-            transform = tonic.transforms.ToFrame(sensor_size=tonic.datasets.DVSGesture.sensor_size, n_event_bins=self.n_bins)
+            transform = tonic.transforms.Compose([tonic.transforms.ToFrame(sensor_size=tonic.datasets.DVSGesture.sensor_size, n_event_bins=self.n_bins), tonic.transforms.NumpyAsType(float)])
             self.train_dataset = get_dataset_fn(save_to='/mnt/c/Users/Admin/Documents', train=True, transform=transform)
             self.val_dataset = get_dataset_fn(save_to='/mnt/c/Users/Admin/Documents', train=False, transform=transform)
 
