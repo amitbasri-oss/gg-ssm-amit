@@ -13,7 +13,7 @@ def select_dataset(dataset_name):
     elif dataset_name == "3et-data":
         return get_3et_dataset
     elif dataset_name == "DVSGesture":
-        return tonic.datasets.DVSGesture#(save_to='/mnt/c/Users/Admin/Documents')
+        return tonic.datasets.DVSGesture
     else:
         raise NotImplementedError(f"Dataset {dataset_name} is not implemented")
 
