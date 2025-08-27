@@ -1,0 +1,15 @@
+causal-conv1d>=1.2.0
+mamba-ssm
+python-tsp
+einops
+matplotlib
+numpy
+pandas
+patool
+reformer-pytorch==1.4.4
+scikit-learn==1.2.2
+scipy==1.10.1
+sktime==0.16.1
+sympy
+torch
+tqdm

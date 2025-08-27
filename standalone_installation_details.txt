@@ -1,0 +1,9 @@
+conda create -y -n gg_ssms python=3.11
+conda activate gg_ssms
+conda install -y pytorch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 pytorch-cuda=12.4 -c pytorch -c nvidia
+conda install -y nvidia::cuda-toolkit
+cd core/convolutional_graph_ssm/third-party/TreeScan/
+pip install -v -e .
+cd $(git rev-parse --show-toplevel)
+cd core/graph_ssm/third-party/TreeScanLan/
+pip install -v -e .
