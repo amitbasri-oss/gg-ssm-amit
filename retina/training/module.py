@@ -43,6 +43,7 @@ class EyeTrackingModelModule(pl.LightningModule):
         if self.training_params["arch_name"] == "3et":
             self.euclidian_error = EuclidianLoss()
 
+        # Needs to be CrossEntropy loss
         elif self.training_params["arch_name"] == "DVSGesture":
             self.euclidian_error = EuclidianLoss()
 
