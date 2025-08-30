@@ -80,7 +80,7 @@ def launch_fire(
         quant_params = params["quant_params"]
 
         # verify conflicts
-        if dataset_params["dataset_name"] != "ini-30" or dataset_params["dataset_name"] != "DVSGesture":
+        if dataset_params["dataset_name"] != "ini-30" and dataset_params["dataset_name"] != "DVSGesture":
             dataset_params["input_channel"] = 1
 
         # save configs
@@ -133,7 +133,6 @@ def launch_fire(
             width=dataset_params["img_width"],
             input_dim=dataset_params["input_channel"],
         ).to(device=device)
-        print(dataset_params["input_channel"])
 
     # LOAD QUANTIZATION
     if (quant_params["a_bit"] < 32 or quant_params["w_bit"] < 32) and (
