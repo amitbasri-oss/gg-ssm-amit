@@ -85,7 +85,7 @@ class CELoss(nn.Module):
         loss = {"distance_loss": ce_loss}
 
         self.memory["points"]["target"] = labels.detach()
-        self.memory["points"]["pred"] = outputs.detach()
+        self.memory["points"]["pred"] = outputs[0].detach()
 
         return loss
 

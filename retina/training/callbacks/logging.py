@@ -21,6 +21,7 @@ class LoggerOrchestrator:
         self.dataset_name = None
 
         self.distance = None
+        self.criterion = torch.nn.CrossEntropyLoss()
         self.iou_metric = None
 
     def log_orchestrator(
@@ -117,28 +118,36 @@ class LoggerOrchestrator:
         point_target = outputs["memory"]["points"]["target"]
         point_pred = outputs["memory"]["points"]["pred"]
 
-        # Real distance
-        point_pred[:, 0] *= self.img_width
-        point_target[:, 0] *= self.img_width
-        point_pred[:, 1] *= self.img_height
-        point_target[:, 1] *= self.img_height
-        self.distance = torch.nn.PairwiseDistance(p=2)(point_pred, point_target)[
-            -(self.num_bins - self.training_params["lpf_kernel_size"]) :
-        ].mean()
-        self.logger.experiment.log({f"{self.dataset_name}/distance": self.distance})
+        if self.training_params["arch_name"] != "DVSGesture":
+            # Real distance
+            point_pred[:, 0] *= self.img_width
+            point_target[:, 0] *= self.img_width
+            point_pred[:, 1] *= self.img_height
+            point_target[:, 1] *= self.img_height
+            self.distance = torch.nn.PairwiseDistance(p=2)(point_pred, point_target)[
+                -(self.num_bins - self.training_params["lpf_kernel_size"]) :
+            ].mean()
+            self.logger.experiment.log({f"{self.dataset_name}/distance": self.distance})
 
-        # Real IOU
-        if self.training_params["arch_name"][:6] == "retina":
-            box_target = outputs["memory"]["box"]["target"]
-            box_pred = outputs["memory"]["box"]["pred"]
-            self.iou_metric = intersection_over_union(box_target, box_pred).mean()
-            self.logger.experiment.log(
-                {f"{self.dataset_name}/iou_metric": self.iou_metric}
-            )
+            # Real IOU
+            if self.training_params["arch_name"][:6] == "retina":
+                box_target = outputs["memory"]["box"]["target"]
+                box_pred = outputs["memory"]["box"]["pred"]
+                self.iou_metric = intersection_over_union(box_target, box_pred).mean()
+                self.logger.experiment.log(
+                    {f"{self.dataset_name}/iou_metric": self.iou_metric}
+                )
 
-        # Create the table correctly
-        my_data = torch.concat([point_pred, point_target], dim=1).detach().cpu().numpy()
-        columns = ["x_pred", "y_pred", "x_target", "y_target"]
+            # Create the table correctly
+            my_data = torch.stack([point_pred, point_target], dim=1).detach().cpu().numpy()
+            columns = ["x_pred", "y_pred", "x_target", "y_target"]
+        else:
+            self.distance = self.criterion(point_pred, point_target)
+            self.logger.experiment.log({f"{self.dataset_name}/distance": self.distance})
+
+            point_pred = torch.argmax(point_pred, dim=1)
+            my_data = torch.stack((point_pred, point_target), dim=1).detach().cpu().numpy()
+            columns = ["class_pred, class_target"]
         test_table = wandb.Table(data=my_data, columns=columns)
 
         # Log the table
