@@ -13,7 +13,7 @@ from core.graph_ssm.main import GraphSSM as TemporalGraphSSM
 
 
 class Baseline_3ET(nn.Module):
-    def __init__(self, height, width, input_dim=1):
+    def __init__(self, height, width, input_dim=1, num_classes=2):
         super(Baseline_3ET, self).__init__()
 
         # 1) 2D (spatial) GraphSSM
@@ -39,11 +39,9 @@ class Baseline_3ET(nn.Module):
             d_model=self.d_model, d_state=16, d_conv=4, expand=2
         )
 
-        # 3) Final MLP: we want to predict (x, y) => dimension=2
-        self.fc_out = nn.Linear(self.d_model, 2)
+        # 3) Final MLP: we want to predict (x, y) => dimension=2  OR  classification
+        self.fc_out = nn.Linear(self.d_model, num_classes)
 
-        # For classification
-        # self.fc_out = nn.Linear(self.d_model, 11)
 
     def forward(self, x):
         """

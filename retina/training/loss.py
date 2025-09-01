@@ -75,14 +75,13 @@ class CELoss(nn.Module):
             "points": {"target": None, "pred": None},
             "box": {"target": None, "pred": None},
         }
+        self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, outputs, labels):
-        labels = labels.flatten(end_dim=1)
-        if len(outputs.shape) != 2:
-            outputs = outputs.flatten(end_dim=1)
-
-        criterion = torch.nn.CrossEntropyLoss()
-        ce_loss = criterion(outputs, labels)
+        if labels.size() == torch.Size([1]):
+            labels = torch.tensor([labels[0]] * outputs.size(1))
+        labels = labels.to(outputs.device)
+        ce_loss = self.criterion(outputs[0], labels)
         loss = {"distance_loss": ce_loss}
 
         self.memory["points"]["target"] = labels.detach()

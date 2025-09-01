@@ -2,7 +2,7 @@ import torch, pdb, os
 import pytorch_lightning as pl
 from sinabs import SNNAnalyzer
 from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
-from training.loss import YoloLoss, EuclidianLoss, SpeckLoss
+from training.loss import YoloLoss, EuclidianLoss, SpeckLoss, CELoss
 from training.models.spiking.lpf import LPFOnline
 from training.models.utils import get_spiking_threshold_list
 
@@ -43,9 +43,8 @@ class EyeTrackingModelModule(pl.LightningModule):
         if self.training_params["arch_name"] == "3et":
             self.euclidian_error = EuclidianLoss()
 
-        # Needs to be CrossEntropy loss
         elif self.training_params["arch_name"] == "DVSGesture":
-            self.euclidian_error = EuclidianLoss()
+            self.crossentropy_error = CELoss()
 
         else:
             self.yolo_error = YoloLoss(dataset_params, training_params)
@@ -163,10 +162,10 @@ class EyeTrackingModelModule(pl.LightningModule):
             loss_dict.update(self.euclidian_error(outputs, labels))
             output_dict["memory"] = self.euclidian_error.memory
 
-        # Needs to be classification Loss
+        # Cross Entropy Loss
         elif self.training_params["arch_name"] == "DVSGesture":
-            loss_dict.update(self.euclidian_error(outputs, labels))
-            output_dict["memory"] = self.euclidian_error.memory
+            loss_dict.update(self.crossentropy_error(outputs, labels))
+            output_dict["memory"] = self.crossentropy_error.memory
 
         # Yolo Loss
         else:

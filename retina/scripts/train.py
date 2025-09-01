@@ -94,6 +94,10 @@ def launch_fire(
             )
             yaml.dump(layers_config, open(f"{out_dir}/layer_configs.yaml", "w"))
 
+    num_classes = 2
+    if dataset_params["dataset_name"] == "DVSGesture":
+        num_classes = 11
+
     # LOAD DATASET
     input_shape = (
         dataset_params["input_channel"],
@@ -132,6 +136,7 @@ def launch_fire(
             height=dataset_params["img_height"],
             width=dataset_params["img_width"],
             input_dim=dataset_params["input_channel"],
+            num_classes=num_classes
         ).to(device=device)
 
     # LOAD QUANTIZATION
