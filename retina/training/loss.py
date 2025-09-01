@@ -75,7 +75,7 @@ class CELoss(nn.Module):
             "points": {"target": None, "pred": None},
             "box": {"target": None, "pred": None},
         }
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion= torch.nn.CrossEntropyLoss()
 
     def forward(self, outputs, labels):
         if labels.size() == torch.Size([1]):
