@@ -147,7 +147,7 @@ class LoggerOrchestrator:
 
             point_pred = torch.argmax(point_pred, dim=1)
             my_data = torch.stack((point_pred, point_target), dim=1).detach().cpu().numpy()
-            columns = ["class_pred, class_target"]
+            columns = ["class_pred", "class_target"]
         test_table = wandb.Table(data=my_data, columns=columns)
 
         # Log the table
